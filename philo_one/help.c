@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:37:48 by froxanne          #+#    #+#             */
-/*   Updated: 2020/12/02 22:45:58 by froxanne         ###   ########.fr       */
+/*   Updated: 2020/12/03 22:47:20 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,8 @@ int		ft_strlen(char const *str)
 	return (len);
 }
 
-int			prog_fail(int code, const char const *message)
+int			programm_failed(int code, const char *message)
 {
-	write(1, "\e[1:1H\e[2JError: ", ft_strlen("\e[1:1H\e[2JError: "));
 	write(1, message, ft_strlen(message));
 	write(1, "\n", 1);
 	return (code);	
