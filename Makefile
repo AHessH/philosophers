@@ -21,25 +21,29 @@ PHILO_ONE_BIN		=	$(addprefix $(PHILO_ONE_DIR), philo_one)
 PHILO_TWO_BIN		=	$(addprefix $(PHILO_ONE_DIR), philo_two)
 PHILO_THREE_BIN		=	$(addprefix $(PHILO_ONE_DIR), philo_three)
 
-CC					=	gcc
+COMPILER			=	gcc
+LDFLAGS				=	-lpthread
 FLAGS				=	-Wall -Werror -Wextra
 # OPTIMIZATION		=	-O1
 
+
+CC					= 	$(COMPILER) $(FLAGS) $(LDFLAGS) $(OPTIMIZATION)
+
 %.o: %.c
-	@$(CC) $(FLAGS) $(OPTIMIZATION) -c $< -o $@
+	@$(CC) -c $< -o $@
 
 all: philo_one philo_two philo_three
 
 philo_one: $(PHILO_ONE_OBJ)
-	@$(CC) $(FLAGS) $(OPTIMIZATION) $(PHILO_ONE_OBJ) -o $(PHILO_ONE_BIN)
+	@$(CC) $(PHILO_ONE_OBJ) -o $(PHILO_ONE_BIN)
 	@echo "\e[1;32mPhilo one was created\e[0m"
 
 philo_two: $(PHILO_TWO_OBJ)
-	@$(CC) $(FLAGS) $(OPTIMIZATION) $(PHILO_TWO_OBJ) -o $(PHILO_TWO_BIN)
+	@$(CC) $(PHILO_TWO_OBJ) -o $(PHILO_TWO_BIN)
 	@echo "\e[1;32mPhilo two was created\e[0m"
 
 philo_three: $(PHILO_THREE_OBJ)
-	@$(CC) $(FLAGS) $(OPTIMIZATION) $(PHILO_THREE_OBJ) -o $(PHILO_THREE_BIN)
+	@$(CC) $(PHILO_THREE_OBJ) -o $(PHILO_THREE_BIN)
 	@echo "\e[1;32mPhilo three was created\e[0m"
 
 clean:
