@@ -21,13 +21,17 @@ PHILO_ONE_BIN		=	$(addprefix $(PHILO_ONE_DIR), philo_one)
 PHILO_TWO_BIN		=	$(addprefix $(PHILO_ONE_DIR), philo_two)
 PHILO_THREE_BIN		=	$(addprefix $(PHILO_ONE_DIR), philo_three)
 
+PHILO_ONE_LINK		=	one
+PHILO_TWO_LINK		=	two
+PHILO_THREE_LINK	=	three
+
 COMPILER			=	gcc
-LDFLAGS				=	-lpthread
-FLAGS				=	-Wall -Werror -Wextra
+LDFLAGS				=	-pthread
+GFLAGS				=	#-Wall -Werror -Wextra -g
 # OPTIMIZATION		=	-O1
 
 
-CC					= 	$(COMPILER) $(FLAGS) $(LDFLAGS) $(OPTIMIZATION)
+CC					= 	$(COMPILER) $(GFLAGS) $(LDFLAGS) $(OPTIMIZATION)
 
 %.o: %.c
 	@$(CC) -c $< -o $@
@@ -36,14 +40,17 @@ all: philo_one philo_two philo_three
 
 philo_one: $(PHILO_ONE_OBJ)
 	@$(CC) $(PHILO_ONE_OBJ) -o $(PHILO_ONE_BIN)
+	@ln -s $(PHILO_ONE_BIN) $(PHILO_ONE_LINK)
 	@echo "\e[1;32mPhilo one was created\e[0m"
 
 philo_two: $(PHILO_TWO_OBJ)
 	@$(CC) $(PHILO_TWO_OBJ) -o $(PHILO_TWO_BIN)
+	@ln -s $(PHILO_TWO_BIN) $(PHILO_TWO_LINK)
 	@echo "\e[1;32mPhilo two was created\e[0m"
 
 philo_three: $(PHILO_THREE_OBJ)
 	@$(CC) $(PHILO_THREE_OBJ) -o $(PHILO_THREE_BIN)
+	@ln -s $(PHILO_THREE_BIN) $(PHILO_THREE_LINK)
 	@echo "\e[1;32mPhilo three was created\e[0m"
 
 clean:
@@ -53,9 +60,8 @@ clean:
 	@echo "\e[1;31mAll object files deleted\e[0m"
 
 fclean: clean
-	@rm -f $(PHILO_ONE_BIN)
-	@rm -f $(PHILO_TWO_BIN)
-	@rm -f $(PHILO_THREE_BIN)
+	@rm -f $(PHILO_ONE_BIN) $(PHILO_TWO_BIN) $(PHILO_THREE_BIN)
+	@rm -f $(PHILO_ONE_LINK) $(PHILO_TWO_LINK) $(PHILO_THREE_LINK)
 	@echo "\e[1;31mAll binary files deleted\e[0m"
 
 re: fclean
