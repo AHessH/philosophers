@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/16 15:05:25 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/18 01:51:35 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,35 +20,30 @@
 
 #include <stdio.h> // DELETE
 
-#define	LEFT	0
-#define RIGHT	1
+#define	LEFT				0
+#define RIGHT				1
 
 
-
-#define EAT		1
-#define SLEEP	2
-#define THINK	3
-
-long long int				g_time_start;
-
-typedef enum				e_fork_status
+typedef enum				e_action_list
 {
-		FREE		=		1,
-		LOCK		=		0
-}							t_fork_status;
+		A_DIE		=		0,
+		A_EAT		=		1,
+		A_SLEEP		=		2,
+		A_THINK		=		3,
+		A_TAKE_FORK	=		4
+}							t_action_list;
 
 typedef enum				e_life_status
 {
-		DIE			=		0,
-		LAST_MEAL	=		1,
-		LIFE		=		2
+		S_DIE		=		0,
+		S_LAST_MEAL	=		1,
+		S_LIFE		=		2
 }							t_life_status;
 
-typedef struct	s_fork
+typedef struct				s_fork
 {
 		pthread_mutex_t		*fork;
-		t_fork_status		status;
-}				t_fork;
+}							t_fork;
 
 
 typedef struct				s_philo_data // общие данные
@@ -59,7 +54,8 @@ typedef struct				s_philo_data // общие данные
 		int					time_to_sleep;
 		int					nb_eat;
 		int					fork_num;
-		t_fork				*fork; // TODO удалить нижнюю строку и заменить на данную структуру, изменить инит
+		struct timeval		time_start;
+		t_fork				*fork; // TODO удалить стрктуру изменить на мьютекс
 }							t_philo_data;
 
 typedef struct				s_ph_params // у каждого совй
