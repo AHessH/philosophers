@@ -6,20 +6,28 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/18 01:48:05 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/20 01:00:43 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long int		get_timestamp(struct timeval time_start)
+long int		get_timestamp(const struct timeval *time_start, const struct timeval *time_end)
 {
 	struct timeval	curr_time;
 	struct timeval	timestamp;
 
-	gettimeofday(&curr_time, NULL);
-	timestamp.tv_sec = curr_time.tv_sec - time_start.tv_sec;
-	timestamp.tv_usec = curr_time.tv_usec - time_start.tv_usec;
+	if (time_end == NULL)
+	{
+		gettimeofday(&curr_time, NULL);
+		timestamp.tv_sec = curr_time.tv_sec - time_start->tv_sec;
+		timestamp.tv_usec = curr_time.tv_usec - time_start->tv_usec;
+	}
+	else
+	{
+		timestamp.tv_sec = time_end->tv_sec - time_start->tv_sec;
+		timestamp.tv_usec = time_end->tv_usec - time_start->tv_usec;
+	}
 	if (timestamp.tv_usec < 0) 
 	{
 		timestamp.tv_sec--;
@@ -54,31 +62,31 @@ t_philo_data	*take_philo_params(char **av, int ac)
 }
 
 
-int					philo_action(int action, t_ph_params *ph)
+int					print_philo_message(int action, t_ph_params *ph)
 {
 	if (action == A_EAT)
 	{
-		printf("%ld %d is eating\n", get_timestamp(ph->data->time_start), ph->ph_index);
+		printf("%ld %d is eating\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 		usleep(ph->data->time_to_eat * 1000);
 	}
 	else if (action == A_SLEEP)
 	{
-		printf("%ld %d is sleeping\n", get_timestamp(ph->data->time_start), ph->ph_index);
+		printf("%ld %d is sleeping\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 		usleep(ph->data->time_to_sleep * 1000);
 		return (ph->data->time_to_sleep);
 	}
 	else if (action == A_THINK)
 	{
-		printf("%ld %d is thinking\n", get_timestamp(ph->data->time_start), ph->ph_index);
+		printf("%ld %d is thinking\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	}
 	else if (action == A_TAKE_FORK)
 	{
-		printf("%ld %d has taken a fork\n", get_timestamp(ph->data->time_start), ph->ph_index);
+		printf("%ld %d has taken a fork\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	}
 	else if (action == A_DIE)
 	{
 		ph->life_status = S_DIE;
-		printf("%ld %i died\n", get_timestamp(ph->data->time_start), ph->ph_index);
+		printf("%ld %i died\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 		return (0);
 	}
 	return (0);
@@ -95,40 +103,28 @@ void				*start_philos(void *philos)
 	t_ph_params		*ph;
 	int				j;
 	int				i;
-	int				hand[2];
 	int64_t 		die_time; // подсчет времени до смерти
+	t_timing		time;
 
 	ph = (t_ph_params *)philos;
 	die_time = 0;
 	while (ph->data->nb_eat == -1 ? 1 : j++ < ph->data->nb_eat)
 	{
-		hand[LEFT] = -1;
-		hand[RIGHT] = -1;
 		i = 0;
-		// TODO установить время тут
-		while ((hand[LEFT] == -1 || hand[RIGHT] == -1)) // TODO не забыть про &&
-		{
-			if (!pthread_mutex_lock(ph->data->fork[i].fork))
-			{
-				philo_action(A_TAKE_FORK, ph);
-				if (hand[LEFT] == -1)
-					hand[LEFT] = i;
-				else if (hand[RIGHT] == -1)
-					hand[RIGHT] = i;
-			}
-			// если время до смерти больше чем time_to_die то философ должен умереть. все должно быть в цикле
-			i = ((i < ph->data->fork_num) ? i + 1 : 0);
-			// TODO тут установить время конца цикла и проверять
-			if (get_timestamp(ph->data->time_start) > ph->data->time_to_die) // TODO здесь проверять сколько времени философ не может взять вилки
-				return ((void *)philo_action(A_DIE, ph));
-		}
+		if (!pthread_mutex_lock(ph->data->fork[ph->hand[LEFT]].fork))
+			print_philo_message(A_TAKE_FORK, ph);
+		if (!pthread_mutex_lock(ph->data->fork[ph->hand[RIGHT]].fork))
+			print_philo_message(A_TAKE_FORK, ph);
+		// если время до смерти больше чем time_to_die то философ должен умереть. все должно быть в цикле
+		if (get_timestamp(&time.start, &time.end) > ph->data->time_to_die)// TODO здесь проверять сколько времени философ не может взять вилки
+			return ((void *)print_philo_message(A_DIE, ph));
 		die_time = 0;
-		if ((die_time += philo_action(A_EAT, ph)) > ph->data->time_to_die)
-			return ((void *)philo_action(A_DIE, ph));
-		throw_forks(ph, hand); // бросает вилки
-		if ((die_time += philo_action(A_SLEEP, ph)) > ph->data->time_to_die)
-			return ((void *)philo_action(A_DIE, ph));
-		philo_action(A_THINK, ph);
+		if ((die_time += print_philo_message(A_EAT, ph)) > ph->data->time_to_die)
+			return ((void *)print_philo_message(A_DIE, ph));
+		throw_forks(ph, ph->hand); // бросает вилки
+		if ((die_time += print_philo_message(A_SLEEP, ph)) > ph->data->time_to_die)
+			return ((void *)print_philo_message(A_DIE, ph));
+		print_philo_message(A_THINK, ph);
 	}
 	if (j >= ph->data->nb_eat)
 		ph->life_status = S_LAST_MEAL;
@@ -145,6 +141,8 @@ t_ph_params		*init_philos(t_philo_data *ph)
 	i = 0;
 	while (i < ph->total_philos)
 	{
+		philo[i].hand[LEFT] = i;
+		philo[i].hand[RIGHT] = (i <= 0) ? ph->total_philos - 1 : i - 1;
 		philo[i].life_status = S_LIFE;
 		philo[i].ph_index = i + 1;
 		philo[i++].data = ph;
@@ -160,26 +158,37 @@ int				start_proc(t_philo_data *ph)
 {
 	pthread_t		*thread;
 	t_ph_params		*philo;
-	int				err_code;
 	int				i;
+	int				last_meal;
 
-	thread = NULL;// TODO добавить инициализацию номеров философов и статус жизни
+	thread = NULL;
 	if (!(philo = init_philos(ph)))
 		return (0); // вывод ошибок
 	if (!(thread = (pthread_t *)malloc(sizeof(pthread_t) * ph->total_philos)))
 		return (0); // TODO подумать как лучше реализовать return 
 	i = 0;
 	while (i < ph->total_philos)
+	{
+		usleep(2);
 		if (pthread_create(&thread[i], NULL, start_philos, &philo[i++]))
 			return (0); // вывод ошибки
+	}
 	i = 0;
 	while (i < ph->total_philos)
 		pthread_detach(thread[i++]);
 	i = 0;
+	last_meal = 0;
 	while (i < ph->total_philos)
 	{
-		if (philo[i].life_status != S_LIFE)
+		if (i == 0)
+			last_meal = 0;
+		if (philo[i].life_status == S_DIE)
 			break ;
+		if (philo[i].life_status == S_LAST_MEAL)
+			last_meal++;
+		if (last_meal == ph->total_philos - 1)
+			break ;
+		//TODO проверку статуса для S_LAST_MEAL
 		i = ((i < ph->total_philos - 1) ? i + 1 : 0); 
 	}
 	return (0);

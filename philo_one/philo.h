@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/18 01:51:35 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/20 00:12:35 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,13 @@ typedef struct				s_fork
 }							t_fork;
 
 
+typedef struct				s_timing
+{
+		struct timeval		start;
+		struct timeval		end;
+}							t_timing;
+
+
 typedef struct				s_philo_data // общие данные
 {
 		int					total_philos;
@@ -61,6 +68,7 @@ typedef struct				s_philo_data // общие данные
 typedef struct				s_ph_params // у каждого совй
 {
 		t_philo_data		*data;
+		int					hand[2];
 		t_life_status		life_status;
 		int					ph_index;
 }							t_ph_params;
