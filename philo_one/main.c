@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/20 01:00:43 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/20 01:06:09 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ t_philo_data	*take_philo_params(char **av, int ac)
 {
 	t_philo_data	*new;
 	int				total_philos;
-	int				i;
 
 	total_philos = ft_atoi(av[1]);
 	if (!(new = (t_philo_data *)malloc(sizeof(t_philo_data))))
@@ -51,12 +50,8 @@ t_philo_data	*take_philo_params(char **av, int ac)
 	new->time_to_sleep = ft_atoi(av[4]);
 	new->nb_eat = ((ac == 6) ? ft_atoi(av[5]) : -1);
 	new->fork_num = new->total_philos;
-	if (!(new->fork = (t_fork *)malloc(sizeof(t_fork) * new->fork_num))) // общее количество вилок
+	if (!(new->fork = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * new->fork_num))) // общее количество вилок
 		return (NULL);
-	i = 0;
-	while (i < new->fork_num)
-		if (!(new->fork[i++].fork = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t))))
-			return (NULL);
 	gettimeofday(&new->time_start, NULL);
 	return (new);
 }
@@ -94,8 +89,8 @@ int					print_philo_message(int action, t_ph_params *ph)
 
 void				throw_forks(t_ph_params *ph, int *hand)
 {
-	pthread_mutex_unlock(ph->data->fork[hand[LEFT]].fork); // бросает вилки
-	pthread_mutex_unlock(ph->data->fork[hand[RIGHT]].fork);
+	pthread_mutex_unlock(&ph->data->fork[hand[LEFT]]); // бросает вилки
+	pthread_mutex_unlock(&ph->data->fork[hand[RIGHT]]);
 }
 
 void				*start_philos(void *philos)
@@ -111,9 +106,9 @@ void				*start_philos(void *philos)
 	while (ph->data->nb_eat == -1 ? 1 : j++ < ph->data->nb_eat)
 	{
 		i = 0;
-		if (!pthread_mutex_lock(ph->data->fork[ph->hand[LEFT]].fork))
+		if (!pthread_mutex_lock(&ph->data->fork[ph->hand[LEFT]]))
 			print_philo_message(A_TAKE_FORK, ph);
-		if (!pthread_mutex_lock(ph->data->fork[ph->hand[RIGHT]].fork))
+		if (!pthread_mutex_lock(&ph->data->fork[ph->hand[RIGHT]]))
 			print_philo_message(A_TAKE_FORK, ph);
 		// если время до смерти больше чем time_to_die то философ должен умереть. все должно быть в цикле
 		if (get_timestamp(&time.start, &time.end) > ph->data->time_to_die)// TODO здесь проверять сколько времени философ не может взять вилки
@@ -149,7 +144,7 @@ t_ph_params		*init_philos(t_philo_data *ph)
 	}
 	i = 0;
 	while (i < ph->fork_num)
-		if (pthread_mutex_init(ph->fork[i++].fork, NULL)) 
+		if (pthread_mutex_init(&ph->fork[i++], NULL)) 
 			return (NULL); // вывод ошибки
 	return (philo);
 }

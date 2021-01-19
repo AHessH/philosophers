@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/20 00:12:35 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/20 01:03:09 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,6 @@ typedef enum				e_life_status
 		S_LIFE		=		2
 }							t_life_status;
 
-typedef struct				s_fork
-{
-		pthread_mutex_t		*fork;
-}							t_fork;
-
-
 typedef struct				s_timing
 {
 		struct timeval		start;
@@ -62,7 +56,7 @@ typedef struct				s_philo_data // общие данные
 		int					nb_eat;
 		int					fork_num;
 		struct timeval		time_start;
-		t_fork				*fork; // TODO удалить стрктуру изменить на мьютекс
+		pthread_mutex_t		*fork;
 }							t_philo_data;
 
 typedef struct				s_ph_params // у каждого совй
