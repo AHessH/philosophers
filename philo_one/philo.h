@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/20 01:03:09 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/22 23:39:54 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ typedef struct				s_ph_params // у каждого совй
 		t_philo_data		*data;
 		int					hand[2];
 		t_life_status		life_status;
+		struct timeval		last_meal;
 		int					ph_index;
 }							t_ph_params;
 
