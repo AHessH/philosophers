@@ -6,27 +6,27 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/23 02:43:00 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 02:05:38 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_usleep(unsigned int n)
-{
-	struct timeval	start;
-	struct timeval	step;
+// void	ft_usleep(unsigned int n)
+// {
+// 	struct timeval	start;
+// 	struct timeval	step;
 
-	gettimeofday(&start, NULL);
-	while (1)
-	{
-		usleep(10);
-		gettimeofday(&step, NULL);
-		if ((size_t)(((size_t)(step.tv_sec - start.tv_sec)) * 1000000 +
-((size_t)(step.tv_usec - start.tv_usec))) > n)
-			break ;
-	}
-}
+// 	gettimeofday(&start, NULL);
+// 	while (1)
+// 	{
+// 		usleep(100);
+// 		gettimeofday(&step, NULL);
+// 		if ((size_t)(((size_t)(step.tv_sec - start.tv_sec)) * 1000000 +
+// ((size_t)(step.tv_usec - start.tv_usec))) > n)
+// 			break ;
+// 	}
+// }
 
 long int		get_timestamp(const struct timeval *time_start, const struct timeval *time_end)
 {
@@ -72,73 +72,60 @@ t_philo_data	*take_philo_params(char **av, int ac)
 	return (new);
 }
 
-void				*time_checker(void *philo)
-{
-	
-}
-
 int					print_philo_message(int action, t_ph_params *ph)
 {
 	if (action == A_EAT)
 	{
 		printf("%ld %d is eating\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
-		ft_usleep(ph->data->time_to_eat * 1000);
-		return (ph->data->time_to_eat);
+		gettimeofday(&ph->last_meal, NULL);
+		usleep(ph->data->time_to_eat * 1000);
 	}
 	else if (action == A_SLEEP)
 	{
-		gettimeofday(&ph->last_meal, NULL);
 		printf("%ld %d is sleeping\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
-		ft_usleep(ph->data->time_to_sleep * 1000);
-		return (ph->data->time_to_sleep);
+		usleep(ph->data->time_to_sleep * 1000);
 	}
 	else if (action == A_THINK)
 	{
 		printf("%ld %d is thinking\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	}
-	else if (action == A_TAKE_FORK)
-	{
-		printf("%ld %d has taken a fork\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
-	}
 	else if (action == A_DIE)
 	{
 		ph->life_status = S_DIE;
 		printf("%ld %i died\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
-		return (0);
 	}
 	return (0);
 }
 
-void				throw_forks(t_ph_params *ph, int *hand)
+void				throw_forks(t_ph_params *ph)
 {
-	pthread_mutex_unlock(&ph->data->fork[hand[LEFT]]); // бросает вилки
-	pthread_mutex_unlock(&ph->data->fork[hand[RIGHT]]);
+	pthread_mutex_unlock(&ph->data->fork[ph->hand[LEFT]]);
+	pthread_mutex_unlock(&ph->data->fork[ph->hand[RIGHT]]);
 }
-// IDEA попробовать создать отдельный поток который будет отслеживать время, ибо это пздц
 
-
+void				take_forks(t_ph_params *ph)
+{
+	pthread_mutex_lock(&ph->data->fork[ph->hand[LEFT]]);
+	pthread_mutex_lock(&ph->data->fork[ph->hand[RIGHT]]);
+	printf("%ld %d has taken a fork\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+}
 
 void				*start_philos(void *philos)
 {
 	t_ph_params		*ph;
 	int				j;
-	long int 		die_time; // подсчет времени до смерти
-	t_timing		time;
 
 	ph = (t_ph_params *)philos;
-	die_time = 0;
 	gettimeofday(&ph->last_meal, NULL);
-	while (ph->data->nb_eat == -1 ? 1 : j++ < ph->data->nb_eat)
+	while (1)
 	{
-		if (!pthread_mutex_lock(&ph->data->fork[ph->hand[LEFT]]))
-			print_philo_message(A_TAKE_FORK, ph);
-		// printf("left fort = %d right fork = %d\n", ph->hand[LEFT], ph->hand[RIGHT]);
-		if (!pthread_mutex_lock(&ph->data->fork[ph->hand[RIGHT]]))
-			print_philo_message(A_TAKE_FORK, ph);
+		take_forks(ph);
 		print_philo_message(A_EAT, ph);
-		throw_forks(ph, ph->hand); // бросает вилки
+		throw_forks(ph);
 		print_philo_message(A_SLEEP, ph);
 		print_philo_message(A_THINK, ph);
+		if (ph->data->nb_eat != -1 && j++ < ph->data->nb_eat)
+			break ;
 	}
 	ph->life_status = S_LAST_MEAL;
 	return (NULL);
@@ -156,9 +143,8 @@ t_ph_params		*init_philos(t_philo_data *ph)
 	{
 		philo[i].hand[LEFT] = i;
 		philo[i].hand[RIGHT] = (i <= 0) ? ph->total_philos - 1 : i - 1;
-		printf("i = %d left = %d right = %d\n", i, philo[i].hand[LEFT], philo[i].hand[RIGHT]);
 		philo[i].life_status = S_LIFE;
-		philo[i].ph_index = i;
+		philo[i].ph_index = i + 1;
 		philo[i++].data = ph;
 	}
 	i = 0;
@@ -168,34 +154,11 @@ t_ph_params		*init_philos(t_philo_data *ph)
 	return (philo);
 }
 
-#ifdef TEST
-void	*start_timer(void *time)
-{
-	int		sec;
-
-	while (sec++ < TEST_TIME)
-		ft_usleep(1000000);
-	*(int *)time = 1;
-}
-#endif
-
-
-int				start_proc(t_philo_data *ph)
+int				run_philos(t_philo_data *ph, t_ph_params *philo)
 {
 	pthread_t		*thread;
-	t_ph_params		*philo;
 	int				i;
-	int				last_meal;
-	int				j;
-	struct timeval	curr_time;
-#ifdef TEST
-	int				result;
-	pthread_t		time_count;
-#endif
 
-	thread = NULL;
-	if (!(philo = init_philos(ph)))
-		return (0); // вывод ошибок
 	if (!(thread = (pthread_t *)malloc(sizeof(pthread_t) * ph->total_philos)))
 		return (0); // TODO подумать как лучше реализовать return 
 	i = 0;
@@ -203,7 +166,7 @@ int				start_proc(t_philo_data *ph)
 	{
 		if (i % 2 == 0)
 		{
-			ft_usleep(10);
+			usleep(10);
 			if (pthread_create(&thread[i], NULL, start_philos, &philo[i]))
 				return (0); // вывод ошибки
 			pthread_detach(thread[i]);
@@ -211,46 +174,48 @@ int				start_proc(t_philo_data *ph)
 		i++;
 	}
 	i = 0;
-	ft_usleep(1000);
+	usleep(1000);
 	while (i < ph->total_philos)
 	{
 		if (i % 2 == 1)
 		{
+			usleep(10);
 			if (pthread_create(&thread[i], NULL, start_philos, &philo[i]))
 				return (0); // вывод ошибки
 			pthread_detach(thread[i]);
 		}
 		i++;
 	}
-#ifdef TEST
-	result = 0;
-	if (pthread_create(&time_count, NULL, start_timer, &result))
-				return (0);
-	pthread_detach(time_count);
-#endif
+	return (0);
+}
+
+int				start_proc(t_philo_data *ph)
+{
+	t_ph_params		*philo;
+	int				i;
+	int				last_meal;
+
+	if (!(philo = init_philos(ph)))
+		return (0); // вывод ошибок
+	run_philos(ph, philo);
 	while (1)
 	{
-		ft_usleep(100);
+		usleep(100);
 		i = 0;
 		last_meal = 0;
-		gettimeofday(&curr_time, NULL);
 		while (i < ph->total_philos)
 		{
-			if (get_timestamp(&philo[i].last_meal, &curr_time) > ph->time_to_die)
+			if (get_timestamp(&philo[i].last_meal, NULL) > ph->time_to_die)
 			{
-				printf("die i = %d \n", i);
+				printf("die i = %d die time = %ld\n", i + 1, get_timestamp(&philo[i].last_meal, NULL));
 				return (0);
 			}
 			if (philo[i].life_status == S_LAST_MEAL)
 				last_meal++;
-			if (last_meal == ph->total_philos - 1)
-				break ;
-#ifdef TEST
-			if (result == 1)
-				return (0);
-#endif
 			i++;
 		}
+		if (last_meal == ph->total_philos - 1)
+				break ;
 	}
 }
 
