@@ -28,10 +28,11 @@ PHILO_THREE_LINK	=	three
 COMPILER			=	gcc
 LDFLAGS				=	-pthread
 GFLAGS				=	#-Wall -Werror -Wextra -g
+DEFINATION			=	-DTEST
 # OPTIMIZATION		=	-O1
 
 
-CC					= 	$(COMPILER) $(GFLAGS) $(LDFLAGS) $(OPTIMIZATION)
+CC					= 	$(COMPILER) $(GFLAGS) $(LDFLAGS) $(OPTIMIZATION) $(DEFINATION)
 
 %.o: %.c
 	@$(CC) -c $< -o $@

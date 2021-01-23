@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/22 23:39:54 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/23 02:22:45 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@
 #define	LEFT				0
 #define RIGHT				1
 
+#ifdef	TEST
+#define TEST_TIME 30
+#endif
 
 typedef enum				e_action_list
 {

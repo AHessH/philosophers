@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/23 01:18:19 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/23 02:43:00 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,10 @@ t_philo_data	*take_philo_params(char **av, int ac)
 	return (new);
 }
 
+void				*time_checker(void *philo)
+{
+	
+}
 
 int					print_philo_message(int action, t_ph_params *ph)
 {
@@ -123,7 +127,7 @@ void				*start_philos(void *philos)
 
 	ph = (t_ph_params *)philos;
 	die_time = 0;
-	gettimeofday(&time.start, NULL);
+	gettimeofday(&ph->last_meal, NULL);
 	while (ph->data->nb_eat == -1 ? 1 : j++ < ph->data->nb_eat)
 	{
 		if (!pthread_mutex_lock(&ph->data->fork[ph->hand[LEFT]]))
@@ -131,24 +135,12 @@ void				*start_philos(void *philos)
 		// printf("left fort = %d right fork = %d\n", ph->hand[LEFT], ph->hand[RIGHT]);
 		if (!pthread_mutex_lock(&ph->data->fork[ph->hand[RIGHT]]))
 			print_philo_message(A_TAKE_FORK, ph);
-		// если время до смерти больше чем time_to_die то философ должен умереть. все должно быть в цикле
-		gettimeofday(&time.end, NULL);
-		// printf("num = %d time = %ld time_to_die = %d\n", ph->ph_index, get_timestamp(&time.start, &time.end), ph->data->time_to_die);
-		if (get_timestamp(&time.start, &time.end) > ph->data->time_to_die)// TODO здесь проверять сколько времени философ не может взять вилки
-			return ((void *)print_philo_message(A_DIE, ph));
-		die_time = 0;
-		gettimeofday(&time.start, NULL);
-		if ((die_time += print_philo_message(A_EAT, ph)) > ph->data->time_to_die)
-			return ((void *)print_philo_message(A_DIE, ph));
-		printf("die_time after eat = %d\n", die_time);
+		print_philo_message(A_EAT, ph);
 		throw_forks(ph, ph->hand); // бросает вилки
-		if ((die_time += print_philo_message(A_SLEEP, ph)) > ph->data->time_to_die)
-			return ((void *)print_philo_message(A_DIE, ph));
-		printf("die_time after sleep = %d\n", die_time);
+		print_philo_message(A_SLEEP, ph);
 		print_philo_message(A_THINK, ph);
 	}
-	if (j >= ph->data->nb_eat)
-		ph->life_status = S_LAST_MEAL;
+	ph->life_status = S_LAST_MEAL;
 	return (NULL);
 }
 
@@ -176,6 +168,18 @@ t_ph_params		*init_philos(t_philo_data *ph)
 	return (philo);
 }
 
+#ifdef TEST
+void	*start_timer(void *time)
+{
+	int		sec;
+
+	while (sec++ < TEST_TIME)
+		ft_usleep(1000000);
+	*(int *)time = 1;
+}
+#endif
+
+
 int				start_proc(t_philo_data *ph)
 {
 	pthread_t		*thread;
@@ -183,6 +187,11 @@ int				start_proc(t_philo_data *ph)
 	int				i;
 	int				last_meal;
 	int				j;
+	struct timeval	curr_time;
+#ifdef TEST
+	int				result;
+	pthread_t		time_count;
+#endif
 
 	thread = NULL;
 	if (!(philo = init_philos(ph)))
@@ -213,26 +222,42 @@ int				start_proc(t_philo_data *ph)
 		}
 		i++;
 	}
-	i = 0;
-	last_meal = 0;
-	while (i < ph->total_philos)
+#ifdef TEST
+	result = 0;
+	if (pthread_create(&time_count, NULL, start_timer, &result))
+				return (0);
+	pthread_detach(time_count);
+#endif
+	while (1)
 	{
-		if (i == 0)
-			last_meal = 0;
-		if (philo[i].life_status == S_DIE)
-			break ;
-		if (philo[i].life_status == S_LAST_MEAL)
-			last_meal++;
-		if (last_meal == ph->total_philos - 1)
-			break ;
-		//TODO проверку статуса для S_LAST_MEAL
-		i = ((i < ph->total_philos - 1) ? i + 1 : 0); 
+		ft_usleep(100);
+		i = 0;
+		last_meal = 0;
+		gettimeofday(&curr_time, NULL);
+		while (i < ph->total_philos)
+		{
+			if (get_timestamp(&philo[i].last_meal, &curr_time) > ph->time_to_die)
+			{
+				printf("die i = %d \n", i);
+				return (0);
+			}
+			if (philo[i].life_status == S_LAST_MEAL)
+				last_meal++;
+			if (last_meal == ph->total_philos - 1)
+				break ;
+#ifdef TEST
+			if (result == 1)
+				return (0);
+#endif
+			i++;
+		}
 	}
-	return (0);
 }
+
 
 int				main(int ac, char **av)
 {
+
 	t_philo_data *ph;
 
 	if (ac != 5 && ac != 6)
@@ -242,4 +267,6 @@ int				main(int ac, char **av)
 	start_proc(ph);
 	// TODO очистить всю память, уничтожить мьютексы
 	return (0);
+
+
 }
