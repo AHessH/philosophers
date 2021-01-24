@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:37:48 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/10 16:24:12 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 14:51:42 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,37 @@ int		ft_strlen(char const *str)
 }
 
 
-int			programm_failed(int code, const char *message)
+int			programm_failed(int code)
 {
-	write(1, message, ft_strlen(message));
-	write(1, "\n", 1);
+	printf("[FAIL]: ");
+	if (code == ERR_ARG_COUNT)
+		printf("Not a valid arguments count\n");
+	else if (code == ERR_MALLOC)
+		printf("Malloc can't allocate memory\n");
+	else if (code == ERR_ARG_VALUE)
+		printf("Not a valid argument value\n");
+	else if (code == ERR_INIT)
+		printf("Impossibly initialize philosophers\n");
+	else if (code == ERR_PTHREAD_CREATE)
+		printf("Pthread create error\n");
 	return (code);	
+}
+
+long int			get_timestamp(const struct timeval *time_start, const struct timeval *time_end)
+{
+	struct timeval	curr_time;
+	struct timeval	timestamp;
+
+	if (time_end == NULL)
+	{
+		gettimeofday(&curr_time, NULL);
+		timestamp.tv_sec = curr_time.tv_sec - time_start->tv_sec;
+		timestamp.tv_usec = curr_time.tv_usec - time_start->tv_usec;
+	}
+	else
+	{
+		timestamp.tv_sec = time_end->tv_sec - time_start->tv_sec;
+		timestamp.tv_usec = time_end->tv_usec - time_start->tv_usec;
+	}
+	return (timestamp.tv_sec * 1000 + timestamp.tv_usec / 1000);
 }

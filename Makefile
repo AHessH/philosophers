@@ -3,7 +3,8 @@ PHILO_TWO_DIR		=	philo_two/
 PHILO_THREE_DIR		=	philo_three/
 
 SRCS				=	main.c \
-						help.c
+						help.c \
+						philo.c
 
 PHILO_ONE_SRCS		= 	$(addprefix $(PHILO_ONE_DIR), $(SRCS))
 PHILO_TWO_SRCS		=	$(addprefix $(PHILO_TWO_DIR), $(SRCS))
@@ -27,7 +28,7 @@ PHILO_THREE_LINK	=	three
 
 COMPILER			=	gcc
 LDFLAGS				=	-pthread
-GFLAGS				=	#-Wall -Werror -Wextra -g
+# GFLAGS				=	-Wall -Werror -Wextra -g
 # OPTIMIZATION		=	-O1
 
 

@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 03:45:07 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 14:54:27 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,17 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/time.h>
-
-#include <stdio.h> // DELETE
+#include <stdio.h>
 
 #define	LEFT				0
 #define RIGHT				1
 
-#ifdef	TEST
-#define TEST_TIME 30
-#endif
+#define ERR_ARG_COUNT		-1
+#define ERR_ARG_VALUE		-2
+#define ERR_MALLOC			-3
+#define ERR_INIT			-4
+#define ERR_PTHREAD_CREATE	-5
+
 
 typedef enum				e_action_list
 {
@@ -60,6 +62,7 @@ typedef struct				s_philo_data // общие данные
 		int					fork_num;
 		struct timeval		time_start;
 		pthread_mutex_t		*fork;
+		pthread_t			*thread;
 }							t_philo_data;
 
 typedef struct				s_ph_params // у каждого совй
@@ -72,12 +75,17 @@ typedef struct				s_ph_params // у каждого совй
 }							t_ph_params;
 
 
-
+/*				HELP			*/
 int							ft_strlen(char const *str);
-int							programm_failed(int code, const char *message);
-
+int							programm_failed(int code);
 int							ft_atoi(const char *str);
-t_philo_data				**take_philo_data(char **av, int ac);
+long int					get_timestamp(const struct timeval *time_start, const struct timeval *time_end);
+
+/*				PHILO			*/
+t_ph_params			*init_philos(t_philo_data *ph);
+void				*start_philos(void *philos);
+int					run_philos(t_philo_data *ph, t_ph_params *philo);
+
 
 
 #endif
