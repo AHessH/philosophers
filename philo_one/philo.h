@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/23 02:22:45 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 03:45:07 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@
 
 typedef enum				e_action_list
 {
-		A_DIE		=		0,
 		A_EAT		=		1,
 		A_SLEEP		=		2,
 		A_THINK		=		3,
-		A_TAKE_FORK	=		4
+		A_TAKE_FORK	=		4,
+		A_THROW_FORK	=	5
 }							t_action_list;
 
 typedef enum				e_life_status

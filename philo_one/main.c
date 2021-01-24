@@ -6,27 +6,11 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 03:36:47 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 03:51:08 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-// void	ft_usleep(unsigned int n)
-// {
-// 	struct timeval	start;
-// 	struct timeval	step;
-
-// 	gettimeofday(&start, NULL);
-// 	while (1)
-// 	{
-// 		usleep(100);
-// 		gettimeofday(&step, NULL);
-// 		if ((size_t)(((size_t)(step.tv_sec - start.tv_sec)) * 1000000 +
-// ((size_t)(step.tv_usec - start.tv_usec))) > n)
-// 			break ;
-// 	}
-// }
 
 long int		get_timestamp(const struct timeval *time_start, const struct timeval *time_end)
 {
@@ -67,42 +51,19 @@ t_philo_data	*take_philo_params(char **av, int ac)
 	return (new);
 }
 
-int					print_philo_message(int action, t_ph_params *ph)
-{
-	if (action == A_EAT)
-	{
-		printf("%ld %d is eating\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
-		gettimeofday(&ph->last_meal, NULL);
-		usleep(ph->data->time_to_eat * 1000);
-	}
-	else if (action == A_SLEEP)
-	{
-		printf("%ld %d is sleeping\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
-		usleep(ph->data->time_to_sleep * 1000);
-	}
-	else if (action == A_THINK)
-	{
-		printf("%ld %d is thinking\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
-	}
-	else if (action == A_DIE)
-	{
-		ph->life_status = S_DIE;
-		printf("%ld %i died\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
-	}
-	return (0);
-}
-
-void				throw_forks(t_ph_params *ph)
-{
-	pthread_mutex_unlock(&ph->data->fork[ph->hand[LEFT]]);
-	pthread_mutex_unlock(&ph->data->fork[ph->hand[RIGHT]]);
-}
-
-void				take_forks(t_ph_params *ph)
+int					philo_actions(t_ph_params *ph)
 {
 	pthread_mutex_lock(&ph->data->fork[ph->hand[LEFT]]);
 	pthread_mutex_lock(&ph->data->fork[ph->hand[RIGHT]]);
 	printf("%ld %d has taken a fork\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+	printf("%ld %d is eating\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+	gettimeofday(&ph->last_meal, NULL);
+	usleep(ph->data->time_to_eat * 1000);
+	pthread_mutex_unlock(&ph->data->fork[ph->hand[LEFT]]);
+	pthread_mutex_unlock(&ph->data->fork[ph->hand[RIGHT]]);
+	printf("%ld %d is sleeping\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+	usleep(ph->data->time_to_sleep * 1000);
+	printf("%ld %d is thinking\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 }
 
 void				*start_philos(void *philos)
@@ -115,11 +76,7 @@ void				*start_philos(void *philos)
 	gettimeofday(&ph->last_meal, NULL);
 	while (1)
 	{
-		take_forks(ph);
-		print_philo_message(A_EAT, ph);
-		throw_forks(ph);
-		print_philo_message(A_SLEEP, ph);
-		print_philo_message(A_THINK, ph);
+		philo_actions(ph);
 		if (ph->data->nb_eat != -1 && ++j >= ph->data->nb_eat)
 			ph->life_status = S_LAST_MEAL;	
 	}
