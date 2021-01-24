@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 02:05:38 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 03:36:47 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,6 @@ long int		get_timestamp(const struct timeval *time_start, const struct timeval *
 		timestamp.tv_sec = time_end->tv_sec - time_start->tv_sec;
 		timestamp.tv_usec = time_end->tv_usec - time_start->tv_usec;
 	}
-	// if (timestamp.tv_usec < 0) 
-	// {
-	// 	timestamp.tv_sec--;
-	// 	timestamp.tv_usec += 1000000; 
-	// }
 	return (timestamp.tv_sec * 1000 + timestamp.tv_usec / 1000);
 }
 
@@ -116,6 +111,7 @@ void				*start_philos(void *philos)
 	int				j;
 
 	ph = (t_ph_params *)philos;
+	j = 0;
 	gettimeofday(&ph->last_meal, NULL);
 	while (1)
 	{
@@ -124,10 +120,9 @@ void				*start_philos(void *philos)
 		throw_forks(ph);
 		print_philo_message(A_SLEEP, ph);
 		print_philo_message(A_THINK, ph);
-		if (ph->data->nb_eat != -1 && j++ < ph->data->nb_eat)
-			break ;
+		if (ph->data->nb_eat != -1 && ++j >= ph->data->nb_eat)
+			ph->life_status = S_LAST_MEAL;	
 	}
-	ph->life_status = S_LAST_MEAL;
 	return (NULL);
 }
 
@@ -215,7 +210,7 @@ int				start_proc(t_philo_data *ph)
 			i++;
 		}
 		if (last_meal == ph->total_philos - 1)
-				break ;
+			break ;
 	}
 }
 
