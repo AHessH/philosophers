@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:37:48 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 14:51:42 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 16:38:00 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ int				ft_atoi(const char *str)
 	return (num * is_neg);
 }
 
-int		ft_strlen(char const *str)
+int				ft_strlen(char const *str)
 {
-	int len;
+	int	len;
 
 	len = 0;
 	while (*str++)
@@ -49,8 +49,7 @@ int		ft_strlen(char const *str)
 	return (len);
 }
 
-
-int			programm_failed(int code)
+int				programm_failed(int code)
 {
 	printf("[FAIL]: ");
 	if (code == ERR_ARG_COUNT)
@@ -63,10 +62,11 @@ int			programm_failed(int code)
 		printf("Impossibly initialize philosophers\n");
 	else if (code == ERR_PTHREAD_CREATE)
 		printf("Pthread create error\n");
-	return (code);	
+	return (code);
 }
 
-long int			get_timestamp(const struct timeval *time_start, const struct timeval *time_end)
+long int		get_timestamp(const struct timeval *time_start,
+							const struct timeval *time_end)
 {
 	struct timeval	curr_time;
 	struct timeval	timestamp;

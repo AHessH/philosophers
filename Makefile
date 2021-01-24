@@ -28,7 +28,7 @@ PHILO_THREE_LINK	=	three
 
 COMPILER			=	gcc
 LDFLAGS				=	-pthread
-# GFLAGS				=	-Wall -Werror -Wextra -g
+GFLAGS				=	-Wall -Werror -Wextra -g
 # OPTIMIZATION		=	-O1
 
 

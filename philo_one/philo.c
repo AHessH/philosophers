@@ -6,25 +6,29 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 14:55:11 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 16:50:02 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int					philo_actions(t_ph_params *ph)
+static int			philo_actions(t_ph_params *ph)
 {
 	pthread_mutex_lock(&ph->data->fork[ph->hand[LEFT]]);
 	pthread_mutex_lock(&ph->data->fork[ph->hand[RIGHT]]);
-	printf("%ld %d has taken a fork\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
-	printf("%ld %d is eating\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+	printf("%ld %d has taken a fork\n",
+			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+	printf("%ld %d is eating\n",
+			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	gettimeofday(&ph->last_meal, NULL);
 	usleep(ph->data->time_to_eat * 1000);
 	pthread_mutex_unlock(&ph->data->fork[ph->hand[LEFT]]);
 	pthread_mutex_unlock(&ph->data->fork[ph->hand[RIGHT]]);
-	printf("%ld %d is sleeping\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+	printf("%ld %d is sleeping\n",
+			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	usleep(ph->data->time_to_sleep * 1000);
-	printf("%ld %d is thinking\n", get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+	printf("%ld %d is thinking\n",
+			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	return (0);
 }
 
@@ -40,7 +44,7 @@ void				*start_philos(void *philos)
 	{
 		philo_actions(ph);
 		if (ph->data->nb_eat != -1 && ++j >= ph->data->nb_eat)
-			ph->life_status = S_LAST_MEAL;	
+			ph->life_status = S_LAST_MEAL;
 	}
 	return (NULL);
 }
@@ -49,9 +53,10 @@ t_ph_params			*init_philos(t_philo_data *ph)
 {
 	int			i;
 	t_ph_params	*philo;
-	
-	if (!(philo = (t_ph_params *)malloc(sizeof(t_ph_params) * ph->total_philos)))
-		return (NULL); // вывод ошибки
+
+	if (!(philo = (t_ph_params *)
+			malloc(sizeof(t_ph_params) * ph->total_philos)))
+		return (NULL);
 	i = 0;
 	while (i < ph->total_philos)
 	{
@@ -63,8 +68,8 @@ t_ph_params			*init_philos(t_philo_data *ph)
 	}
 	i = 0;
 	while (i < ph->fork_num)
-		if (pthread_mutex_init(&ph->fork[i++], NULL)) 
-			return (NULL); // вывод ошибки
+		if (pthread_mutex_init(&ph->fork[i++], NULL))
+			return (NULL);
 	return (philo);
 }
 
@@ -72,30 +77,24 @@ int					run_philos(t_philo_data *ph, t_ph_params *philo)
 {
 	int				i;
 
-	i = 0;
-	while (i < ph->total_philos)
-	{
+	i = -1;
+	while (++i < ph->total_philos)
 		if (i % 2 == 0)
 		{
 			usleep(10);
 			if (pthread_create(&ph->thread[i], NULL, start_philos, &philo[i]))
-				return (0); // вывод ошибки
+				return (0);
 			pthread_detach(ph->thread[i]);
 		}
-		i++;
-	}
-	i = 0;
+	i = -1;
 	usleep(1000);
-	while (i < ph->total_philos)
-	{
+	while (++i < ph->total_philos)
 		if (i % 2 == 1)
 		{
 			usleep(10);
 			if (pthread_create(&ph->thread[i], NULL, start_philos, &philo[i]))
-				return (0); // вывод ошибки
+				return (0);
 			pthread_detach(ph->thread[i]);
 		}
-		i++;
-	}
 	return (1);
 }
