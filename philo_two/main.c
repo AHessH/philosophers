@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 16:48:09 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 17:43:12 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,13 @@ static t_philo_data		*take_philo_params(char **av, int ac)
 	new->time_to_sleep = ft_atoi(av[4]);
 	new->nb_eat = ((ac == 6) ? ft_atoi(av[5]) : -1);
 	new->fork_num = new->total_philos;
-	if (!(new->fork = (pthread_mutex_t *)
-				malloc(sizeof(pthread_mutex_t) * new->fork_num)))
-		return (NULL);
 	gettimeofday(&new->time_start, NULL);
 	if (!(new->thread = (pthread_t *)
 				malloc(sizeof(pthread_t) * new->total_philos)))
+		return (NULL);
+	// if (!(new->fork = (sem_t *)malloc(sizeof(sem_t)))) //DELETE
+	// 	return (NULL);
+	if (!(new->sem_name = ft_strdup("forks")))
 		return (NULL);
 	return (new);
 }
@@ -71,7 +72,10 @@ static void				clean_resourses(t_philo_data *data, t_ph_params *philo)
 		if (data->thread)
 			free(data->thread);
 		if (data->fork)
-			free(data->fork);
+		{
+			sem_close(data->fork);
+			sem_unlink(data->sem_name);
+		}
 	}
 	if (philo)
 		free(philo);
@@ -107,7 +111,6 @@ int						main(int ac, char **av)
 	t_philo_data	*ph;
 	t_ph_params		*philo;
 	int				err;
-
 	if (ac != 5 && ac != 6)
 		return (programm_failed(ERR_ARG_COUNT));
 	if (!(check_args_value(av, ac)))

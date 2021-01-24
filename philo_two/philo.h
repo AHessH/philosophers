@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 16:30:50 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 17:33:56 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 # include <stdlib.h>
 # include <sys/time.h>
 # include <stdio.h>
+# include <semaphore.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 # define LEFT				0
 # define RIGHT				1
@@ -59,7 +63,8 @@ typedef struct				s_philo_data
 	int						nb_eat;
 	int						fork_num;
 	struct timeval			time_start;
-	pthread_mutex_t			*fork;
+	char					*sem_name;
+	sem_t					*fork;
 	pthread_t				*thread;
 }							t_philo_data;
 
@@ -75,6 +80,7 @@ typedef struct				s_ph_params
 /*
 **				HELP
 */
+char						*ft_strdup(char const *str);
 int							ft_strlen(char const *str);
 int							programm_failed(int code);
 int							ft_atoi(const char *str);

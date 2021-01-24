@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:37:48 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 16:38:00 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/24 17:23:11 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,23 @@ long int		get_timestamp(const struct timeval *time_start,
 		timestamp.tv_usec = time_end->tv_usec - time_start->tv_usec;
 	}
 	return (timestamp.tv_sec * 1000 + timestamp.tv_usec / 1000);
+}
+
+char	*ft_strdup(char const *str)
+{
+	int		len;
+	int		i;
+	char	*copy;
+
+	i = 0;
+	len = ft_strlen(str);
+	if (!(copy = (char *)malloc(sizeof(char) * (len + 1))))
+		return (NULL);
+	while (i < len)
+	{
+		copy[i] = str[i];
+		i++;
+	}
+	copy[i] = 0;
+	return (copy);
 }
