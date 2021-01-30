@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 17:43:12 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/26 22:56:23 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,12 @@ static t_philo_data		*take_philo_params(char **av, int ac)
 	new->nb_eat = ((ac == 6) ? ft_atoi(av[5]) : -1);
 	new->fork_num = new->total_philos;
 	gettimeofday(&new->time_start, NULL);
+	if (!(new->pid = (pid_t *)
+				malloc(sizeof(pid_t) * new->total_philos)))
+		return (NULL);
 	if (!(new->thread = (pthread_t *)
 				malloc(sizeof(pthread_t) * new->total_philos)))
 		return (NULL);
-	// if (!(new->fork = (sem_t *)malloc(sizeof(sem_t)))) //DELETE
-	// 	return (NULL);
 	if (!(new->sem_name = ft_strdup("forks")))
 		return (NULL);
 	return (new);
@@ -37,30 +38,30 @@ static t_philo_data		*take_philo_params(char **av, int ac)
 
 static int				start_proc(t_philo_data *ph, t_ph_params *philo)
 {
-	int				i;
-	int				last_meal;
+	// int				i;
+	// int				last_meal;
 
-	if (!(run_philos(ph, philo)))
+	if ((run_philos(ph, philo)))
 		return (ERR_PTHREAD_CREATE);
-	while (1)
-	{
-		usleep(100);
-		i = -1;
-		last_meal = 0;
-		while (++i < ph->total_philos)
-		{
-			if (get_timestamp(&philo[i].last_meal, NULL) > ph->time_to_die)
-			{
-				printf("die i = %d die time = %ld\n", i + 1,
-							get_timestamp(&philo[i].last_meal, NULL));
-				return (0);
-			}
-			if (philo[i].life_status == S_LAST_MEAL)
-				last_meal++;
-		}
-		if (last_meal == ph->total_philos - 1)
-			return (0);
-	}
+	// while (1)
+	// {
+	// 	usleep(100);
+	// 	i = -1;
+	// 	last_meal = 0;
+	// 	while (++i < ph->total_philos)
+	// 	{
+	// 		if (get_timestamp(&philo[i].last_meal, NULL) > ph->time_to_die)
+	// 		{
+	// 			printf("die i = %d die time = %ld\n", i + 1,
+	// 						get_timestamp(&philo[i].last_meal, NULL));
+	// 			return (0);
+	// 		}
+	// 		if (philo[i].life_status == S_LAST_MEAL)
+	// 			last_meal++;
+	// 	}
+	// 	if (last_meal == ph->total_philos - 1)
+	// 		return (0);
+	// }
 	return (0);
 }
 
@@ -119,8 +120,12 @@ int						main(int ac, char **av)
 		return (programm_failed(ERR_MALLOC));
 	if (!(philo = init_philos(ph)))
 		return (ERR_INIT);
+	printf("tyt1\n");
 	if ((err = start_proc(ph, philo)))
 		return (programm_failed(err));
+	// waitpid(0, NULL, WUNTRACED);
+	printf("after waitpid\n");
+	exit(0);
 	clean_resourses(ph, philo);
 	return (0);
 }

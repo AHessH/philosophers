@@ -19,8 +19,8 @@ REBUILD_TWO			:=	$(shell find philo_two/ -name philo_two | wc -l)
 REBUILD_THREE		:=	$(shell find philo_three/ -name philo_three | wc -l)
 
 PHILO_ONE_BIN		=	$(addprefix $(PHILO_ONE_DIR), philo_one)
-PHILO_TWO_BIN		=	$(addprefix $(PHILO_ONE_DIR), philo_two)
-PHILO_THREE_BIN		=	$(addprefix $(PHILO_ONE_DIR), philo_three)
+PHILO_TWO_BIN		=	$(addprefix $(PHILO_TWO_DIR), philo_two)
+PHILO_THREE_BIN		=	$(addprefix $(PHILO_THREE_DIR), philo_three)
 
 PHILO_ONE_LINK		=	one
 PHILO_TWO_LINK		=	two

@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 17:45:17 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/26 01:06:12 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,28 +83,41 @@ t_ph_params			*init_philos(t_philo_data *ph)
 	return (philo);
 }
 
+int					monitor(t_ph_params *philo)
+{
+	while (1)
+	{
+		usleep(100);
+		if (get_timestamp(&philo->last_meal, NULL) > philo->data->time_to_die)
+		{
+			printf("die i = %d die time = %ld\n", philo->ph_index,
+						get_timestamp(&philo->last_meal, NULL));
+			return (0);
+		}
+		if (philo->life_status == S_LAST_MEAL)
+			return (1);
+	}
+	return (0);
+}
+
 int					run_philos(t_philo_data *ph, t_ph_params *philo)
 {
 	int				i;
 
 	i = -1;
 	while (++i < ph->total_philos)
-		if (i % 2 == 0)
+	{
+		if ((ph->pid[i] = fork()) < 0)
+			return (0);//ошибка
+		else if (ph->pid[i] == 0)
 		{
-			usleep(10);
 			if (pthread_create(&ph->thread[i], NULL, start_philos, &philo[i]))
 				return (0);
 			pthread_detach(ph->thread[i]);
+			monitor(&philo[i]);
+			printf("tyt\n");
+			exit(0);
 		}
-	i = -1;
-	usleep(1000);
-	while (++i < ph->total_philos)
-		if (i % 2 == 1)
-		{
-			usleep(10);
-			if (pthread_create(&ph->thread[i], NULL, start_philos, &philo[i]))
-				return (0);
-			pthread_detach(ph->thread[i]);
-		}
+	}
 	return (1);
 }

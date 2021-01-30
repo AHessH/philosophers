@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 17:33:56 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/01/26 01:10:32 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,10 @@
 # include <sys/time.h>
 # include <stdio.h>
 # include <semaphore.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <sys/wait.h>
+# include <fcntl.h>
 
 # define LEFT				0
 # define RIGHT				1
@@ -54,6 +55,10 @@ typedef struct				s_timing
 	struct timeval			end;
 }							t_timing;
 
+// добавить дополнительный семафор, установить значение в 5 и каждый раз когда философ поел, уменшать
+// В мейне цикл, пока семафор полностью не освободится не выходить
+// или попробовать с ret_value
+
 typedef struct				s_philo_data
 {
 	int						total_philos;
@@ -66,6 +71,7 @@ typedef struct				s_philo_data
 	char					*sem_name;
 	sem_t					*fork;
 	pthread_t				*thread;
+	pid_t					*pid;
 }							t_philo_data;
 
 typedef struct				s_ph_params
