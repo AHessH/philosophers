@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 16:48:09 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/07 00:07:39 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,18 @@ static int				start_proc(t_philo_data *ph, t_ph_params *philo)
 
 static void				clean_resourses(t_philo_data *data, t_ph_params *philo)
 {
+	int	i;
+
+	i = 0;
 	if (data)
 	{
-		free(data);
+		while (i < data->fork_num)
+			pthread_mutex_destroy(&data->fork[i++]);
 		if (data->thread)
 			free(data->thread);
 		if (data->fork)
 			free(data->fork);
+		free(data);
 	}
 	if (philo)
 		free(philo);

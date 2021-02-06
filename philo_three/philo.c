@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/02/06 23:54:51 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/07 00:26:00 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,7 @@ int					monitor(t_ph_params *philo)
 		{
 			printf("die i = %d die time = %ld\n", philo->ph_index,
 						get_timestamp(&philo->last_meal, NULL));
+						
 			return (2);
 		}
 		if (philo->life_status == S_LAST_MEAL)

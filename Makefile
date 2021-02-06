@@ -26,13 +26,13 @@ PHILO_ONE_LINK		=	one
 PHILO_TWO_LINK		=	two
 PHILO_THREE_LINK	=	three
 
-COMPILER			=	gcc
+CC					=	gcc
 LDFLAGS				=	-pthread
 GFLAGS				=	-Wall -Werror -Wextra -g
-# OPTIMIZATION		=	-O1
+
+CC					:= 	$(CC) $(COMPILER) $(GFLAGS) $(LDFLAGS)
 
 
-CC					= 	$(COMPILER) $(GFLAGS) $(LDFLAGS) $(OPTIMIZATION)
 
 %.o: %.c
 	@$(CC) -c $< -o $@
