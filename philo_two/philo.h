@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 17:33:56 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/06 23:52:59 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@
 # include <sys/time.h>
 # include <stdio.h>
 # include <semaphore.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <fcntl.h>
 
 # define LEFT				0
 # define RIGHT				1
@@ -77,9 +77,6 @@ typedef struct				s_ph_params
 	int						ph_index;
 }							t_ph_params;
 
-/*
-**				HELP
-*/
 char						*ft_strdup(char const *str);
 int							ft_strlen(char const *str);
 int							programm_failed(int code);
@@ -87,9 +84,6 @@ int							ft_atoi(const char *str);
 long int					get_timestamp(const struct timeval *time_start,
 								const struct timeval *time_end);
 
-/*
-**				PHILO
-*/
 t_ph_params					*init_philos(t_philo_data *ph);
 void						*start_philos(void *philos);
 int							run_philos(t_philo_data *ph, t_ph_params *philo);

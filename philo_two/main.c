@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 17:43:12 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/06 23:45:45 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,6 @@ static t_philo_data		*take_philo_params(char **av, int ac)
 	if (!(new->thread = (pthread_t *)
 				malloc(sizeof(pthread_t) * new->total_philos)))
 		return (NULL);
-	// if (!(new->fork = (sem_t *)malloc(sizeof(sem_t)))) //DELETE
-	// 	return (NULL);
 	if (!(new->sem_name = ft_strdup("forks")))
 		return (NULL);
 	return (new);
@@ -111,6 +109,7 @@ int						main(int ac, char **av)
 	t_philo_data	*ph;
 	t_ph_params		*philo;
 	int				err;
+
 	if (ac != 5 && ac != 6)
 		return (programm_failed(ERR_ARG_COUNT));
 	if (!(check_args_value(av, ac)))

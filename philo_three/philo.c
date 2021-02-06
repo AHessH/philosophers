@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/26 01:06:12 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/06 23:54:51 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 static int			philo_actions(t_ph_params *ph)
 {
-	// pthread_mutex_lock(&ph->data->fork[ph->hand[LEFT]]);
-	// pthread_mutex_lock(&ph->data->fork[ph->hand[RIGHT]]);
 	sem_wait(ph->data->fork);
 	sem_wait(ph->data->fork);
 	printf("%ld %d has taken a fork\n",
@@ -24,14 +22,8 @@ static int			philo_actions(t_ph_params *ph)
 			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	gettimeofday(&ph->last_meal, NULL);
 	usleep(ph->data->time_to_eat * 1000);
-	
-
 	sem_post(ph->data->fork);
 	sem_post(ph->data->fork);
-
-	// pthread_mutex_unlock(&ph->data->fork[ph->hand[LEFT]]);
-	// pthread_mutex_unlock(&ph->data->fork[ph->hand[RIGHT]]);
-	
 	printf("%ld %d is sleeping\n",
 			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	usleep(ph->data->time_to_sleep * 1000);
@@ -54,7 +46,7 @@ void				*start_philos(void *philos)
 		if (ph->data->nb_eat != -1 && ++j >= ph->data->nb_eat)
 			ph->life_status = S_LAST_MEAL;
 	}
-	return (NULL);
+	exit(ph->life_status);
 }
 
 t_ph_params			*init_philos(t_philo_data *ph)
@@ -75,16 +67,18 @@ t_ph_params			*init_philos(t_philo_data *ph)
 		philo[i++].data = ph;
 	}
 	i = 0;
-	if ((ph->fork = sem_open(ph->sem_name, O_CREAT|O_EXCL, O_RDWR, 5)) == SEM_FAILED)
+	if ((ph->fork = sem_open(ph->sem_name,
+				O_CREAT | O_EXCL, O_RDWR, 5)) == SEM_FAILED)
 	{
 		sem_unlink(ph->sem_name);
-		ph->fork = sem_open(ph->sem_name, O_CREAT|O_EXCL, O_RDWR, 5);
+		ph->fork = sem_open(ph->sem_name, O_CREAT | O_EXCL, O_RDWR, 5);
 	}
 	return (philo);
 }
 
 int					monitor(t_ph_params *philo)
 {
+	usleep(100);
 	while (1)
 	{
 		usleep(100);
@@ -92,7 +86,7 @@ int					monitor(t_ph_params *philo)
 		{
 			printf("die i = %d die time = %ld\n", philo->ph_index,
 						get_timestamp(&philo->last_meal, NULL));
-			return (0);
+			return (2);
 		}
 		if (philo->life_status == S_LAST_MEAL)
 			return (1);
@@ -108,16 +102,18 @@ int					run_philos(t_philo_data *ph, t_ph_params *philo)
 	while (++i < ph->total_philos)
 	{
 		if ((ph->pid[i] = fork()) < 0)
-			return (0);//ошибка
+			return (1);
 		else if (ph->pid[i] == 0)
 		{
 			if (pthread_create(&ph->thread[i], NULL, start_philos, &philo[i]))
 				return (0);
 			pthread_detach(ph->thread[i]);
-			monitor(&philo[i]);
-			printf("tyt\n");
-			exit(0);
+			exit(monitor(&philo[i]));
 		}
 	}
-	return (1);
+	waitpid(-1, NULL, WUNTRACED);
+	i = -1;
+	while (++i < ph->total_philos)
+		kill(ph->pid[i], 1);
+	return (0);
 }

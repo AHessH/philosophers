@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/26 22:56:23 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/06 23:43:08 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,30 +38,8 @@ static t_philo_data		*take_philo_params(char **av, int ac)
 
 static int				start_proc(t_philo_data *ph, t_ph_params *philo)
 {
-	// int				i;
-	// int				last_meal;
-
 	if ((run_philos(ph, philo)))
-		return (ERR_PTHREAD_CREATE);
-	// while (1)
-	// {
-	// 	usleep(100);
-	// 	i = -1;
-	// 	last_meal = 0;
-	// 	while (++i < ph->total_philos)
-	// 	{
-	// 		if (get_timestamp(&philo[i].last_meal, NULL) > ph->time_to_die)
-	// 		{
-	// 			printf("die i = %d die time = %ld\n", i + 1,
-	// 						get_timestamp(&philo[i].last_meal, NULL));
-	// 			return (0);
-	// 		}
-	// 		if (philo[i].life_status == S_LAST_MEAL)
-	// 			last_meal++;
-	// 	}
-	// 	if (last_meal == ph->total_philos - 1)
-	// 		return (0);
-	// }
+		return (1);
 	return (0);
 }
 
@@ -112,6 +90,7 @@ int						main(int ac, char **av)
 	t_philo_data	*ph;
 	t_ph_params		*philo;
 	int				err;
+
 	if (ac != 5 && ac != 6)
 		return (programm_failed(ERR_ARG_COUNT));
 	if (!(check_args_value(av, ac)))
@@ -120,12 +99,8 @@ int						main(int ac, char **av)
 		return (programm_failed(ERR_MALLOC));
 	if (!(philo = init_philos(ph)))
 		return (ERR_INIT);
-	printf("tyt1\n");
 	if ((err = start_proc(ph, philo)))
 		return (programm_failed(err));
-	// waitpid(0, NULL, WUNTRACED);
-	printf("after waitpid\n");
-	exit(0);
 	clean_resourses(ph, philo);
 	return (0);
 }

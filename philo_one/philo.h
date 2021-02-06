@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:33:09 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 16:30:50 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/06 23:49:18 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,18 +72,12 @@ typedef struct				s_ph_params
 	int						ph_index;
 }							t_ph_params;
 
-/*
-**				HELP
-*/
 int							ft_strlen(char const *str);
 int							programm_failed(int code);
 int							ft_atoi(const char *str);
 long int					get_timestamp(const struct timeval *time_start,
 								const struct timeval *time_end);
 
-/*
-**				PHILO
-*/
 t_ph_params					*init_philos(t_philo_data *ph);
 void						*start_philos(void *philos);
 int							run_philos(t_philo_data *ph, t_ph_params *philo);

@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 17:45:17 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/06 23:46:29 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 static int			philo_actions(t_ph_params *ph)
 {
-	// pthread_mutex_lock(&ph->data->fork[ph->hand[LEFT]]);
-	// pthread_mutex_lock(&ph->data->fork[ph->hand[RIGHT]]);
 	sem_wait(ph->data->fork);
 	sem_wait(ph->data->fork);
 	printf("%ld %d has taken a fork\n",
@@ -24,14 +22,8 @@ static int			philo_actions(t_ph_params *ph)
 			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	gettimeofday(&ph->last_meal, NULL);
 	usleep(ph->data->time_to_eat * 1000);
-	
-
 	sem_post(ph->data->fork);
 	sem_post(ph->data->fork);
-
-	// pthread_mutex_unlock(&ph->data->fork[ph->hand[LEFT]]);
-	// pthread_mutex_unlock(&ph->data->fork[ph->hand[RIGHT]]);
-	
 	printf("%ld %d is sleeping\n",
 			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	usleep(ph->data->time_to_sleep * 1000);
@@ -75,10 +67,11 @@ t_ph_params			*init_philos(t_philo_data *ph)
 		philo[i++].data = ph;
 	}
 	i = 0;
-	if ((ph->fork = sem_open(ph->sem_name, O_CREAT|O_EXCL, O_RDWR, 5)) == SEM_FAILED)
+	if ((ph->fork = sem_open(ph->sem_name,
+				O_CREAT | O_EXCL, O_RDWR, 5)) == SEM_FAILED)
 	{
 		sem_unlink(ph->sem_name);
-		ph->fork = sem_open(ph->sem_name, O_CREAT|O_EXCL, O_RDWR, 5);
+		ph->fork = sem_open(ph->sem_name, O_CREAT | O_EXCL, O_RDWR, 5);
 	}
 	return (philo);
 }

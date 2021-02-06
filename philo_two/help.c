@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:37:48 by froxanne          #+#    #+#             */
-/*   Updated: 2021/01/24 17:23:11 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/06 23:53:15 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int				ft_atoi(const char *str)
 
 int				ft_strlen(char const *str)
 {
-	int	len;
+	int		len;
 
 	len = 0;
 	while (*str++)
@@ -85,7 +85,7 @@ long int		get_timestamp(const struct timeval *time_start,
 	return (timestamp.tv_sec * 1000 + timestamp.tv_usec / 1000);
 }
 
-char	*ft_strdup(char const *str)
+char			*ft_strdup(char const *str)
 {
 	int		len;
 	int		i;
