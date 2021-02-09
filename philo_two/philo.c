@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/02/09 23:03:10 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/10 02:02:29 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ static int			philo_actions(t_ph_params *ph)
 	usleep(ph->data->time_to_sleep * 1000);
 	printf("%ld %d is thinking\n",
 			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+	usleep(ph->ph_index % 2 * 110);
 	return (0);
 }
 
@@ -82,22 +83,11 @@ int					run_philos(t_philo_data *ph, t_ph_params *philo)
 
 	i = -1;
 	while (++i < ph->total_philos)
-		if (i % 2 == 0)
-		{
-			usleep(10);
-			if (pthread_create(&ph->thread[i], NULL, start_philos, &philo[i]))
-				return (0);
-			pthread_detach(ph->thread[i]);
-		}
-	i = -1;
-	usleep(1000);
-	while (++i < ph->total_philos)
-		if (i % 2 == 1)
-		{
-			usleep(10);
-			if (pthread_create(&ph->thread[i], NULL, start_philos, &philo[i]))
-				return (0);
-			pthread_detach(ph->thread[i]);
-		}
+	{
+		if (pthread_create(&ph->thread[i], NULL, start_philos, &philo[i]))
+			return (0);
+		pthread_detach(ph->thread[i]);
+		usleep(10);
+	}
 	return (1);
 }

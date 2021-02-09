@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/02/09 23:12:50 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/10 01:40:42 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ static void				clean_resourses(t_philo_data *data, t_ph_params *philo)
 {
 	if (data)
 	{
-		if (data->sem_name)
-			free(data->sem_name);
 		if (data->thread)
 			free(data->thread);
 		if (data->fork)
@@ -56,6 +54,8 @@ static void				clean_resourses(t_philo_data *data, t_ph_params *philo)
 			sem_close(data->fork);
 			sem_unlink(data->sem_name);
 		}
+		if (data->sem_name)
+			free(data->sem_name);
 		free(data);
 	}
 	if (philo)
