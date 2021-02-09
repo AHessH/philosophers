@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/02/06 23:46:29 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/09 23:03:10 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,10 @@ t_ph_params			*init_philos(t_philo_data *ph)
 	}
 	i = 0;
 	if ((ph->fork = sem_open(ph->sem_name,
-				O_CREAT | O_EXCL, O_RDWR, 5)) == SEM_FAILED)
+				O_CREAT | O_EXCL, O_RDWR, ph->fork_num)) == SEM_FAILED)
 	{
 		sem_unlink(ph->sem_name);
-		ph->fork = sem_open(ph->sem_name, O_CREAT | O_EXCL, O_RDWR, 5);
+		ph->fork = sem_open(ph->sem_name, O_CREAT | O_EXCL, O_RDWR, ph->sem_name);
 	}
 	return (philo);
 }

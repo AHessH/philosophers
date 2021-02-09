@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/02/07 00:34:40 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/09 23:22:37 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,10 @@ t_ph_params			*init_philos(t_philo_data *ph)
 	}
 	i = 0;
 	if ((ph->fork = sem_open(ph->sem_name,
-				O_CREAT | O_EXCL, O_RDWR, 5)) == SEM_FAILED)
+				O_CREAT | O_EXCL, O_RDWR, ph->fork_num)) == SEM_FAILED)
 	{
 		sem_unlink(ph->sem_name);
-		ph->fork = sem_open(ph->sem_name, O_CREAT | O_EXCL, O_RDWR, 5);
+		ph->fork = sem_open(ph->sem_name, O_CREAT | O_EXCL, O_RDWR, ph->fork_num);
 	}
 	return (philo);
 }
@@ -84,8 +84,8 @@ int					monitor(t_ph_params *philo)
 		usleep(100);
 		if (get_timestamp(&philo->last_meal, NULL) > philo->data->time_to_die)
 		{
-			printf("die i = %d die time = %ld\n", philo->ph_index,
-						get_timestamp(&philo->last_meal, NULL));
+			printf("%ld %d died\n", get_timestamp(
+				&philo->data->time_start, NULL), philo->ph_index);
 			return (2);
 		}
 		if (philo->life_status == S_LAST_MEAL)

@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/02 22:32:26 by froxanne          #+#    #+#             */
-/*   Updated: 2021/02/07 00:07:39 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/09 23:07:47 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,15 +43,15 @@ static int				start_proc(t_philo_data *ph, t_ph_params *philo)
 		return (ERR_PTHREAD_CREATE);
 	while (1)
 	{
-		usleep(100);
+		usleep(200);
 		i = -1;
 		last_meal = 0;
 		while (++i < ph->total_philos)
 		{
 			if (get_timestamp(&philo[i].last_meal, NULL) > ph->time_to_die)
 			{
-				printf("die i = %d die time = %ld\n", i + 1,
-							get_timestamp(&philo[i].last_meal, NULL));
+				printf("%ld %d died\n",
+							get_timestamp(&ph->time_start, NULL), i + 1);
 				return (0);
 			}
 			if (philo[i].life_status == S_LAST_MEAL)
