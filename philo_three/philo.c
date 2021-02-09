@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/02/09 23:22:37 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/10 01:37:05 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 static int			philo_actions(t_ph_params *ph)
 {
-	sem_wait(ph->data->fork);
-	sem_wait(ph->data->fork);
+	sem_wait(ph->data->fork);			
 	printf("%ld %d has taken a fork\n",
 			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+	sem_wait(ph->data->fork);
 	printf("%ld %d is eating\n",
 			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	gettimeofday(&ph->last_meal, NULL);
@@ -29,6 +29,7 @@ static int			philo_actions(t_ph_params *ph)
 	usleep(ph->data->time_to_sleep * 1000);
 	printf("%ld %d is thinking\n",
 			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
+	usleep(ph->ph_index % 2 * 110);
 	return (0);
 }
 
@@ -86,7 +87,7 @@ int					monitor(t_ph_params *philo)
 		{
 			printf("%ld %d died\n", get_timestamp(
 				&philo->data->time_start, NULL), philo->ph_index);
-			return (2);
+			exit(2);
 		}
 		if (philo->life_status == S_LAST_MEAL)
 			return (1);
@@ -110,6 +111,7 @@ int					run_philos(t_philo_data *ph, t_ph_params *philo)
 			pthread_detach(ph->thread[i]);
 			exit(monitor(&philo[i]));
 		}
+		usleep(10);
 	}
 	waitpid(-1, NULL, WUNTRACED);
 	i = -1;
