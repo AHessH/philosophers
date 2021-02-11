@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/02/10 02:01:11 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/11 21:58:08 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static int			philo_actions(t_ph_params *ph)
 {
-	sem_wait(ph->data->fork);			
+	sem_wait(ph->data->fork);
 	printf("%ld %d has taken a fork\n",
 			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
 	sem_wait(ph->data->fork);
@@ -72,7 +72,8 @@ t_ph_params			*init_philos(t_philo_data *ph)
 				O_CREAT | O_EXCL, O_RDWR, ph->fork_num)) == SEM_FAILED)
 	{
 		sem_unlink(ph->sem_name);
-		ph->fork = sem_open(ph->sem_name, O_CREAT | O_EXCL, O_RDWR, ph->fork_num);
+		ph->fork = sem_open(ph->sem_name,
+			O_CREAT | O_EXCL, O_RDWR, ph->fork_num);
 	}
 	return (philo);
 }

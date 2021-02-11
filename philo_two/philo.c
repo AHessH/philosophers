@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/02/11 21:56:00 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/11 21:58:44 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,8 @@ t_ph_params			*init_philos(t_philo_data *ph)
 				O_CREAT | O_EXCL, O_RDWR, ph->fork_num)) == SEM_FAILED)
 	{
 		sem_unlink(ph->sem_name);
-		ph->fork = sem_open(ph->sem_name, O_CREAT | O_EXCL, O_RDWR, ph->sem_name);
+		ph->fork = sem_open(ph->sem_name,
+			O_CREAT | O_EXCL, O_RDWR, ph->sem_name);
 	}
 	return (philo);
 }
@@ -87,7 +88,7 @@ int					run_philos(t_philo_data *ph, t_ph_params *philo)
 		if (pthread_create(&ph->thread[i], NULL, start_philos, &philo[i]))
 			return (0);
 		pthread_detach(ph->thread[i]);
-		usleep(400);		
+		usleep(400);
 	}
 	return (1);
 }
