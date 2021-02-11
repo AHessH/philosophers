@@ -6,7 +6,7 @@
 /*   By: froxanne <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/24 14:50:38 by froxanne          #+#    #+#             */
-/*   Updated: 2021/02/10 02:02:29 by froxanne         ###   ########.fr       */
+/*   Updated: 2021/02/11 21:56:00 by froxanne         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static int			philo_actions(t_ph_params *ph)
 	usleep(ph->data->time_to_sleep * 1000);
 	printf("%ld %d is thinking\n",
 			get_timestamp(&ph->data->time_start, NULL), ph->ph_index);
-	usleep(ph->ph_index % 2 * 110);
+	usleep(110);
 	return (0);
 }
 
@@ -87,7 +87,7 @@ int					run_philos(t_philo_data *ph, t_ph_params *philo)
 		if (pthread_create(&ph->thread[i], NULL, start_philos, &philo[i]))
 			return (0);
 		pthread_detach(ph->thread[i]);
-		usleep(10);
+		usleep(400);		
 	}
 	return (1);
 }
